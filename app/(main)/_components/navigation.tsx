@@ -1,7 +1,7 @@
 "use client"
 
 import { ChevronsLeft,MenuIcon, PlusCircle,Search,Settings,Plus, Trash } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { useParams, usePathname } from "next/navigation"
 import { useState,useEffect,useRef,ElementRef } from "react"
 import { useMediaQuery } from "usehooks-ts"
 import { cn } from "@/lib/utils"
@@ -19,15 +19,18 @@ import {
 import { TrashBox } from "./trash-box"
 import { useSearch } from '@/hooks/use-search'
 import { useSettings } from "@/hooks/use-settings"
+import { Navbar } from "./navbar"
 
 
 export const Navigation = () => {
 
     const pathname = usePathname();
-    const isMobile = useMediaQuery("(max-width: 768px)")
-    const create = useMutation(api.documents.create)
     const search = useSearch()
     const settings = useSettings()
+    const params = useParams()
+    const isMobile = useMediaQuery("(max-width: 768px)")
+    const create = useMutation(api.documents.create)
+    
 
     const isResizingRef = useRef(false)
     const sidebarRef = useRef<ElementRef<"aside">>(null)
@@ -214,9 +217,19 @@ export const Navigation = () => {
                     isMobile && "left-0 w-full"
                 )}
             >
-                <nav className="bg-transparent px-3 py-2 w-full">
-                    { isCollapsed && <MenuIcon onClick={resetWidth} className="h-6 w-6 text-muted-foreground" /> }
-                </nav>
+                {
+                    !!params.documentId ? (
+                        <Navbar
+                            isCollapsed={isCollapsed}
+                            onResetWidth={resetWidth}
+                        />
+                    ) : (
+                    <nav className="bg-transparent px-3 py-2 w-full">
+                        { isCollapsed && <MenuIcon onClick={resetWidth} className="h-6 w-6 text-muted-foreground" /> }
+                    </nav>
+                    )
+                } 
+               
             </div>
         </>
     )
